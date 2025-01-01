@@ -35,7 +35,7 @@ services:
     restart: always
   
   db:
-    image: mongo
+    image: mongo:4.4
     ports:
       - 27017:27017
     restart: always

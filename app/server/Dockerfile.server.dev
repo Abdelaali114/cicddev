@@ -1,4 +1,5 @@
-FROM node
+FROM node:16
+
 
 # Creates /app/server folder aand sets it as the working directory for any RUN, CMD, ENTRYPOINT, 
 # COPY and ADD instructions that follow it

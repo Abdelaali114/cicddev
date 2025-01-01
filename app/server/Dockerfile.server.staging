@@ -1,4 +1,4 @@
-FROM node:10.13.0-alpine as builder
+FROM node:16 as builder
 
 WORKDIR /app/server
 
@@ -21,7 +21,7 @@ RUN npm install --production=true
 
 COPY . .
 
-FROM node:10.13.0-alpine
+FROM node:16
 
 WORKDIR /app/server
 
