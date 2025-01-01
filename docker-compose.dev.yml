@@ -1,53 +1,31 @@
 version: "3.8"
 
 services:
-  client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile.client.dev
-    image: client
-    environment:
-      - REACT_APP_PORT=5173
-      - CHOKIDAR_USEPOLLING=true
-      - VITE_API_URL=http://localhost:3001
+  web:
+    depends_on:
+      - api
+    build: ./client
     ports:
       - 5173:5173
-    volumes:
-      - ./client/src:/app/client/src
-      - ./client/public:/app/client/public
-    command: npm start
-    restart: always
-
-  server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile.server.dev
-    image: server
     environment:
-      - MONGO_URI=mongodb://db:27017/Alumni
-      - PORT=3001
-      - NODE_ENV=development
-    ports:
-      - 3001:3001
-    volumes:
-      - ./server/src:/app/server/src
-    command: npm run dev
-    restart: always
+      VITE_API_URL: http://localhost:3001
+
+  api:
     depends_on:
       - db
+    build: ./server
+    ports:
+      - 3001:3001
+    environment:
+      MONGO_URL: mongodb://db/Alumni
+      PORT: 3001
 
   db:
     image: mongo:4.4
     ports:
       - 27017:27017
-    restart: always
     volumes:
       - Alumni:/data/db
-    healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.runCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
 volumes:
   Alumni:
