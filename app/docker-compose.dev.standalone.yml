@@ -9,6 +9,7 @@ services:
     environment:
       - REACT_APP_PORT=3000
       - CHOKIDAR_USEPOLLING=true
+      - NODE_OPTIONS=--openssl-legacy-provider
     image: client
     ports:
       - 3000:3000
