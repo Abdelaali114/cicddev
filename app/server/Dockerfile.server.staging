@@ -12,8 +12,8 @@ ENV NODE_ENV=$NODE_ENV
 RUN printenv
 
 #! Install the build requirements for bcrypt
-RUN apk update && apk upgrade \
-    && apk --no-cache add --virtual builds-deps build-base python \
+RUN apt update && apt upgrade \
+    && apt --no-cache add --virtual builds-deps build-base python \
     && npm add node-gyp node-pre-gyp
 
 # Set production flag so dev dependencies aren't installed
