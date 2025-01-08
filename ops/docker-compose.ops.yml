@@ -74,4 +74,6 @@ volumes:
 
 networks:
   overlay_network:
-  default:
+    driver: overlay
+    attachable: true
+  

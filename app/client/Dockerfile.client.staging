@@ -1,31 +1,30 @@
 FROM node:16 as builder
 
-WORKDIR /usr/src/app
+WORKDIR /app/client
 
 COPY package*.json .
 COPY yarn.lock .
 
-# Set production flag so dev dependencies aren't installed
-RUN npm install --production=true
+# Install dependencies
+RUN npm install
 
 COPY . .
 
-# Build the production build (Create React App package script)
-RUN npm build
+# Build the React app
+RUN npm run build
 
-##
-
+## Final Image
 FROM nginx
 
-# Set our custom nginx.conf in the container
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/nginx.conf
+WORKDIR /usr/share/nginx/html
 
-# Copy the react build from the build container
-COPY --from=builder /usr/src/app/build /usr/share/nginx/html
+# Copy React build to Nginx
+COPY --from=builder /app/client/build .
 
-# Set permissions so nginx can serve it
-RUN chown nginx.nginx /usr/share/nginx/html/ -R
+# Set permissions
+RUN chown -R nginx:nginx /usr/share/nginx/html
 
-## probably REDUNDANT!
-# EXPOSE 8080
+# Expose port 80
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

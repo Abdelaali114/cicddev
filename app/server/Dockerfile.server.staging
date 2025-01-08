@@ -3,38 +3,29 @@ FROM node:16 as builder
 WORKDIR /app/server
 
 COPY package*.json .
-COPY yarn* .
+COPY yarn.lock .
 
-ENV MONGO_URI=$MONGO_URI
-ENV PORT=$SRV_PORT
-ENV NODE_ENV=$NODE_ENV
-
-RUN printenv
-
-#! Install the build requirements for bcrypt
-RUN apt update && apt upgrade \
-    && apt --no-cache add --virtual builds-deps build-base python \
-    && npm add node-gyp node-pre-gyp
-
-# Set production flag so dev dependencies aren't installed
-RUN npm install --production=true
+# Install dependencies
+RUN npm install
 
 COPY . .
 
+# Final Image
 FROM node:16
 
 WORKDIR /app/server
 
-# Copy the server from the build container
+
 COPY --from=builder /app/server .
 
-ENV MONGO_URI=$MONGO_URI
-ENV PORT=$SRV_PORT
-ENV NODE_ENV=$NODE_ENV
-# ENV MONGO_URI mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@${MONGO_URI}
-# ENV PORT ${SRV_PORT}
-# ENV NODE_ENV ${NODE_ENV}
+# Environment variables
+ARG MONGO_URI
+ARG PORT
+ARG NODE_ENV
+ENV MONGO_URI=${MONGO_URI}
+ENV PORT=${PORT}
+ENV NODE_ENV=${NODE_ENV}
 
-RUN printenv
+EXPOSE 4000
 
-CMD ["node", "server.js"]
+CMD ["node", "src/server.js"]

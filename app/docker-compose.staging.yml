@@ -1,31 +1,34 @@
 version: "3.8"
 
 services:
-
   client:
     build:
       context: ./client
       dockerfile: Dockerfile.client.staging
-    image: localhost:5000/client:staging # Use fully qualified image names
+    image: localhost:5000/client:staging
     ports:
-      - "8080:8080"
+      - "8080:80"
     stdin_open: true
 
   server:
     build:
       context: ./server
       dockerfile: Dockerfile.server.staging
-    image: localhost:5000/server:staging # Use fully qualified image names
+      args:
+        MONGO_URI: mongodb://db:27017/db
+        PORT: 4000
+        NODE_ENV: production
+    image: localhost:5000/server:staging
     environment:
-      - MONGO_URI=mongodb://db:27017/db # Correct MongoDB connection string
+      - MONGO_URI=mongodb://db:27017/db
       - PORT=4000
       - NODE_ENV=production
     command: node src/server.js
 
   db:
-    image: localhost:5000/mongo:staging # Use a tagged version for consistency
+    image: localhost:5000/mongo:staging
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=abdelaali # Use variable interpolation
+      - MONGO_INITDB_ROOT_USERNAME=abdelaali
       - MONGO_INITDB_ROOT_PASSWORD=Abdellaali2550
     volumes:
       - db_staging:/data/db
